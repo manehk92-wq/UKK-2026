@@ -1,19 +1,13 @@
 <?php
 
 $host = "localhost";
-$username = "root";
+$user = "root";
 $password = "";
-$database = "db_sekolah";
+$database = "db_ukk_2026";
 
-$conn = mysqli_connect(
-    $host,
-    $username,
-    $password,
-    $database
-);
+$koneksi = mysqli_connect($host, $user, $password, $database);
 
-if (!$conn) {
+if (!$koneksi) {
     die("Koneksi database gagal: " . mysqli_connect_error());
 }
-
-mysqli_set_charset($conn, "utf8mb4");
+?>

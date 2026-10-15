@@ -4,48 +4,46 @@ session_start();
 
 include "config/koneksi.php";
 
-$email = trim($_POST['email']);
+$email = $_POST['email'];
 $password = $_POST['password'];
 
-$query = "SELECT
-            id,
-            name,
-            email,
-            password,
-            role
-          FROM users
-          WHERE email = ?
-          LIMIT 1";
+$query = mysqli_query($koneksi, "SELECT * FROM t_users WHERE email = '$email'");
 
-$stmt = mysqli_prepare($conn, $query);
+$data = mysqli_fetch_assoc($query);
 
-mysqli_stmt_bind_param(
-    $stmt,
-    "s",
-    $email
-);
+if ($data) {
 
-mysqli_stmt_execute($stmt);
+    // Untuk password yang sudah di-hash
+    $password_cocok = password_verify($password, $data['password']);
 
-$result = mysqli_stmt_get_result($stmt);
+    // Untuk password yang masih berupa teks biasa
+    if ($password == $data['password']) {
+        $password_cocok = true;
+    }
 
-$user = mysqli_fetch_assoc($result);
+    if ($password_cocok) {
 
-if ($user && password_verify($password, $user['password'])) {
+        $_SESSION['login'] = true;
+        $_SESSION['id'] = $data['id'];
+        $_SESSION['name'] = $data['name'];
+        $_SESSION['email'] = $data['email'];
+        $_SESSION['role'] = $data['role'];
 
-    session_regenerate_id(true);
+        header("Location: dashboard.php");
+        exit;
 
-    $_SESSION['user_id'] = $user['id'];
-    $_SESSION['name'] = $user['name'];
-    $_SESSION['email'] = $user['email'];
-    $_SESSION['role'] = $user['role'];
+    } else {
 
-    header("Location: dashboard.php");
-    exit;
+        header("Location: login.php?pesan=gagal");
+        exit;
+
+    }
 
 } else {
 
-    header("Location: login.php?error=1");
+    header("Location: login.php?pesan=gagal");
     exit;
 
 }
+
+?>

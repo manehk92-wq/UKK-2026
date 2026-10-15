@@ -2,310 +2,169 @@
 
 session_start();
 
-if (!isset($_SESSION['user_id'])) {
-
-    header("Location: auth/login.php");
+if (!isset($_SESSION['login'])) {
+    header("Location: login.php");
     exit;
-
 }
 
-include "config/koneksi.php";
-
-
-/*
-|--------------------------------------------------------------------------
-| HITUNG DATA
-|--------------------------------------------------------------------------
-*/
-
-$queryGuru = mysqli_query(
-    $conn,
-    "SELECT COUNT(*) AS total FROM guru"
-);
-
-$totalGuru = mysqli_fetch_assoc($queryGuru)['total'];
-
-
-$querySiswa = mysqli_query(
-    $conn,
-    "SELECT COUNT(*) AS total FROM siswa"
-);
-
-$totalSiswa = mysqli_fetch_assoc($querySiswa)['total'];
-
-
-$queryKelas = mysqli_query(
-    $conn,
-    "SELECT COUNT(*) AS total FROM kelas"
-);
-
-$totalKelas = mysqli_fetch_assoc($queryKelas)['total'];
-
-
-$queryTahun = mysqli_query(
-    $conn,
-    "SELECT COUNT(*) AS total FROM tahun_ajaran"
-);
-
-$totalTahun = mysqli_fetch_assoc($queryTahun)['total'];
-
-
-$queryPelanggaran = mysqli_query(
-    $conn,
-    "SELECT COUNT(*) AS total FROM pelanggaran_siswa"
-);
-
-$totalPelanggaran = mysqli_fetch_assoc($queryPelanggaran)['total'];
+$halaman = 'dashboard';
 
 ?>
 
 <!DOCTYPE html>
-
 <html lang="id">
 
 <head>
 
     <meta charset="UTF-8">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
-
     <title>Dashboard</title>
 
-    <link rel="stylesheet"
-          href="assets/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
+    <style>
+
+        .nav-link {
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background-color: #0d6efd !important;
+            color: white !important;
+        }
+    </style>
 </head>
-
-
 <body>
 
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+    integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+    crossorigin="anonymous">
+</script>
 
-<!-- SIDEBAR -->
-
-<aside class="sidebar">
-
-    <div class="logo">
-
-        <h2>SEKOLAH</h2>
-
-        <small>
-            Sistem Informasi
-        </small>
-
-    </div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js"
+    integrity="sha384-G/EV+4j2dNv+tEPo3++6LCgdCROaejBqfUeNjuKAiuXbjrxilcCdDz6ZAVfHWe1Y"
+    crossorigin="anonymous">
+</script>
 
 
-    <nav>
+<div class="container-fluid">
 
-        <a href="dashboard.php"
-           class="active">
-            🏠 Dashboard
-        </a>
+    <div class="row">
 
 
-        <a href="guru/index.php">
-            👨‍🏫 Data Guru
-        </a>
+        <!-- SIDEBAR -->
+
+        <?php include 'includes/sidebar.php'; ?>
 
 
-        <a href="siswa/index.php">
-            👨‍🎓 Data Siswa
-        </a>
+        <!-- KONTEN -->
 
-
-        <a href="kelas/index.php">
-            🏫 Data Kelas
-        </a>
-
-
-        <a href="tahun_ajaran/index.php">
-            📅 Tahun Ajaran
-        </a>
-
-
-        <a href="wali_kelas/index.php">
-            👤 Wali Kelas
-        </a>
-
-
-        <a href="pelanggaran/index.php">
-            ⚠️ Pelanggaran
-        </a>
-
-    </nav>
-
-
-    <div class="logout">
-
-        <a href="auth/logout.php">
-            🚪 Logout
-        </a>
-
-    </div>
-
-</aside>
-
-
-
-<!-- MAIN -->
-
-<main class="main">
-
-    <header class="topbar">
-
-        <div>
+        <main class="col-md-9 col-lg-10 p-4">
 
             <h2>Dashboard</h2>
 
-            <small>
-                Sistem Informasi Sekolah
-            </small>
+            <div class="row">
 
-        </div>
-
-
-        <div class="profile">
-
-            <strong>
-                <?= htmlspecialchars($_SESSION['name']); ?>
-            </strong>
-
-            <small>
-                <?= htmlspecialchars($_SESSION['role']); ?>
-            </small>
-
-        </div>
-
-    </header>
+                <p>
+                    Selamat datang,
+                    <?php echo $_SESSION['name']; ?>
+                </p>
 
 
+                <p>
 
-    <section class="content">
+                    Role:
 
-        <h1>
-            Selamat datang,
-            <?= htmlspecialchars($_SESSION['name']); ?> 👋
-        </h1>
+                    <?php
 
-        <p class="description">
-            Berikut ringkasan data sistem sekolah.
-        </p>
+                    if ($_SESSION['role'] == 'admin') {
+                        echo "Admin";
+                    } else {
+                        echo "Guru";
+                    }
 
+                    ?>
 
-        <!-- CARDS -->
-
-        <div class="cards">
+                </p>
 
 
-            <div class="card">
+                <!-- CARD DATA SISWA -->
 
-                <div class="icon">
-                    👨‍🏫
-                </div>
+                <div class="col-md-4 mb-3">
 
-                <div>
+                    <div class="card shadow-sm">
 
-                    <h3>Guru</h3>
+                        <div class="card-body">
 
-                    <strong>
-                        <?= $totalGuru; ?>
-                    </strong>
+                            <h5 class="card-title">
+                                Data Siswa
+                            </h5>
+
+                            <h2>
+                                120
+                            </h2>
+
+                        </div>
+
+                    </div>
 
                 </div>
+
+
+                <!-- CARD DATA GURU -->
+
+                <div class="col-md-4 mb-3">
+
+                    <div class="card shadow-sm">
+
+                        <div class="card-body">
+
+                            <h5 class="card-title">
+                                Data Guru
+                            </h5>
+
+                            <h2>
+                                25
+                            </h2>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- CARD KELAS -->
+
+                <div class="col-md-4 mb-3">
+
+                    <div class="card shadow-sm">
+
+                        <div class="card-body">
+
+                            <h5 class="card-title">
+                                Kelas
+                            </h5>
+
+                            <h2>
+                                12
+                            </h2>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
 
             </div>
 
+        </main>
 
 
-            <div class="card">
+    </div>
 
-                <div class="icon">
-                    👨‍🎓
-                </div>
-
-                <div>
-
-                    <h3>Siswa</h3>
-
-                    <strong>
-                        <?= $totalSiswa; ?>
-                    </strong>
-
-                </div>
-
-            </div>
-
-
-
-            <div class="card">
-
-                <div class="icon">
-                    🏫
-                </div>
-
-                <div>
-
-                    <h3>Kelas</h3>
-
-                    <strong>
-                        <?= $totalKelas; ?>
-                    </strong>
-
-                </div>
-
-            </div>
-
-
-
-            <div class="card">
-
-                <div class="icon">
-                    ⚠️
-                </div>
-
-                <div>
-
-                    <h3>Pelanggaran</h3>
-
-                    <strong>
-                        <?= $totalPelanggaran; ?>
-                    </strong>
-
-                </div>
-
-            </div>
-
-
-        </div>
-
-
-        <!-- INFORMASI -->
-
-        <div class="panel">
-
-            <h2>Informasi</h2>
-
-            <p>
-                Tahun ajaran yang tersedia:
-                <strong>
-                    <?= $totalTahun; ?>
-                </strong>
-            </p>
-
-            <p>
-                Login sebagai:
-                <strong>
-                    <?= htmlspecialchars($_SESSION['role']); ?>
-                </strong>
-            </p>
-
-        </div>
-
-
-    </section>
-
-</main>
+</div>
 
 
 </body>
