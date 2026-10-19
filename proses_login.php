@@ -1,49 +1,35 @@
 <?php
-
+//proses_login.php
 session_start();
+include 'config/koneksi.php';
 
-include "config/koneksi.php";
-
-$email = $_POST['email'];
+$email = mysqli_real_escape_string($koneksi, $_POST['email']);
 $password = $_POST['password'];
 
-$query = mysqli_query($koneksi, "SELECT * FROM t_users WHERE email = '$email'");
+$sql = "SELECT * FROM t_users WHERE email = '$email'";
+$hasil = mysqli_query($koneksi,$sql);
 
-$data = mysqli_fetch_assoc($query);
+if (mysqli_num_rows($hasil) == 1) {
+    $data = mysqli_fetch_assoc($hasil);
 
-if ($data) {
+    if (password_verify($password,$data['password'])) {
+        //password cocok,buat session
+        $_SESSION['login']=true;
+        $_SESSION['id']=$data['id'];
+        $_SESSION['name']=$data['name'];
+        $_SESSION['role']=$data['role'];
 
-    // Untuk password yang sudah di-hash
-    $password_cocok = password_verify($password, $data['password']);
 
-    // Untuk password yang masih berupa teks biasa
-    if ($password == $data['password']) {
-        $password_cocok = true;
-    }
-
-    if ($password_cocok) {
-
-        $_SESSION['login'] = true;
-        $_SESSION['id'] = $data['id'];
-        $_SESSION['name'] = $data['name'];
-        $_SESSION['email'] = $data['email'];
-        $_SESSION['role'] = $data['role'];
-
-        header("Location: dashboard.php");
+        header('Location: dashboard.php');
         exit;
-
     } else {
-
-        header("Location: login.php?pesan=gagal");
-        exit;
-
+        $_SESSION['pesan_error'] = 'password salah!';
+        header('Location: login.php');
+       exit;
     }
-
-} else {
-
-    header("Location: login.php?pesan=gagal");
+}else {
+    $_SESSION['pesan_eror'] = 'Email tidak ditemukan!';
+    header('Location: login.php');
     exit;
-
 }
-
 ?>

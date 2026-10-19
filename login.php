@@ -1,72 +1,53 @@
-<?php
-session_start();
-
-if (isset($_SESSION['login'])) {
-    header("Location: dashboard.php");
-    exit;
-}
-?>
+<!--login.php-->
 
 <!DOCTYPE html>
-<html lang="id">
+<html>
+    <head>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+        <title>Login - Pelanggaran Siswa </title>
+    </head>
+    <body>
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+        <h1>Login Aplikasi Pelanggaran Siswa</h1>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Sistem Pelanggaran Siswa</title>
-    <!-- BOOTSTRAP CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
+        <?php
+        session_start();
+        if (isset($_SESSION['pesan_error'])){
+            echo '<p>'. $_SESSION['pesan_error'] . '</p>';
+            unset ($_SESSION['pesan_error']);
+        }
+        ?>
+        <!-- <form action="proses_login.php" method="POST">
+            <table>
+                <tr>
+                    <td>Email</td>
+                    <td>:</td>
+                    <td><input type="email" name="email" required></td>
+                </tr>
+                <tr>
+                    <td>Password</td>
+                    <td>:</td>
+                    <td><input type="password" name="password" required></td>
+                </tr>
+                <tr>
+                    <td colspan="3">
+                        <input type="submit" value="Login">
+                    </td>
+                </tr>
+            </table>
+</form> -->
+<form action="proses_login.php" method="POST">
+  <div class="form-group">
+    <label for="exampleInputEmail1">Email address</label>
+    <input type="email" name="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
 
-<body class="bg-success-subtle d-flex justify-content-center align-items-center min-vh-100">
-
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-5 col-lg-4">
-
-                <div class="card shadow border-0 rounded-4">
-                    <div class="card-body p-4">
-                        
-                        <h3 class="text-center fw-bold mb-4 text-success">Login System</h3>
-
-                        <!-- PESAN ERROR LOGIN -->
-                        <?php if (isset($_GET['pesan'])): ?>
-                            <?php if ($_GET['pesan'] == 'gagal'): ?>
-                                <div class="alert alert-danger alert-dismissible fade show py-2 text-center" role="alert">
-                                    <small>Email atau password salah!</small>
-                                </div>
-                            <?php endif; ?>
-                        <?php endif; ?>
-
-                        <form action="proses_login.php" method="POST">
-
-                            <div class="mb-3">
-                                <label class="form-label fw-semibold">Email</label>
-                                <input type="email" name="email" class="form-control" placeholder="Masukkan email..." required>
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label fw-semibold">Password</label>
-                                <input type="password" name="password" class="form-control" placeholder="Masukkan password..." required>
-                            </div>
-
-                            <div class="d-grid mt-4">
-                                <button type="submit" class="btn btn-success py-2 fw-semibold">
-                                    Login
-                                </button>
-                            </div>
-
-                        </form>
-
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </div>
-
-    <!-- BOOTSTRAP JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-
+  <div class="form-group">
+    <label for="exampleInputPassword1">Password</label>
+    <input type="password" name="password"class="form-control" id="exampleInputPassword1" placeholder="Password">
+  </div>
+  <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+    </body>
 </html>

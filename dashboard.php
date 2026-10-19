@@ -1,172 +1,75 @@
 <?php
-
-session_start();
-
-if (!isset($_SESSION['login'])) {
-    header("Location: login.php");
-    exit;
-}
-
-$halaman = 'dashboard';
-
+//dasboard.php
+include "includes/cek_session.php";
+include "config/koneksi.php";
 ?>
-
 <!DOCTYPE html>
-<html lang="id">
-
+<html>
 <head>
-
-    <meta charset="UTF-8">
-
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <title>Dashboard</title>
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <style>
-
-        .nav-link {
-            transition: all 0.3s ease;
-        }
-
-        .nav-link:hover {
-            background-color: #0d6efd !important;
-            color: white !important;
-        }
-    </style>
+    <link rel="stylesheet" href="layout/style.css">
 </head>
+
 <body>
-
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
-    integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
-    crossorigin="anonymous">
-</script>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js"
-    integrity="sha384-G/EV+4j2dNv+tEPo3++6LCgdCROaejBqfUeNjuKAiuXbjrxilcCdDz6ZAVfHWe1Y"
-    crossorigin="anonymous">
-</script>
-
+     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 
 <div class="container-fluid">
-
     <div class="row">
-
-
-        <!-- SIDEBAR -->
-
-        <?php include 'includes/sidebar.php'; ?>
-
-
+        <?php
+            include "layout/sidebar.php";
+        ?>
         <!-- KONTEN -->
-
         <main class="col-md-9 col-lg-10 p-4">
-
             <h2>Dashboard</h2>
-
+            <p>
+                Selamat datang di halaman dashboard
+            </p>
             <div class="row">
-
-                <p>
-                    Selamat datang,
-                    <?php echo $_SESSION['name']; ?>
-                </p>
-
-
-                <p>
-
-                    Role:
-
-                    <?php
-
-                    if ($_SESSION['role'] == 'admin') {
-                        echo "Admin";
-                    } else {
-                        echo "Guru";
-                    }
-
-                    ?>
-
-                </p>
-
-
                 <!-- CARD DATA SISWA -->
-
                 <div class="col-md-4 mb-3">
-
                     <div class="card shadow-sm">
-
                         <div class="card-body">
-
                             <h5 class="card-title">
                                 Data Siswa
                             </h5>
-
                             <h2>
                                 120
                             </h2>
-
                         </div>
-
                     </div>
-
                 </div>
-
-
                 <!-- CARD DATA GURU -->
-
                 <div class="col-md-4 mb-3">
-
                     <div class="card shadow-sm">
-
                         <div class="card-body">
-
                             <h5 class="card-title">
                                 Data Guru
                             </h5>
-
                             <h2>
                                 25
                             </h2>
-
                         </div>
-
                     </div>
-
                 </div>
-
-
                 <!-- CARD KELAS -->
-
                 <div class="col-md-4 mb-3">
-
                     <div class="card shadow-sm">
-
                         <div class="card-body">
-
                             <h5 class="card-title">
                                 Kelas
                             </h5>
-
                             <h2>
-                                12
-                            </h2>
-
+                             12
+                          </h2>
                         </div>
-
                     </div>
-
                 </div>
-
-
             </div>
-
         </main>
-
-
     </div>
-
-</div>
-
-
+</div>      
 </body>
-
 </html>
