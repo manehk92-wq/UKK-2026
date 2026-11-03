@@ -2,7 +2,7 @@
 session_start();
 include "config/koneksi.php";
 
-$nama = "Raja Kadu";
+$nama = "Sendi Mardian";
 $kelas = "XII RPL";
 $sekolah = "SMK Muhammadiyah Tasikmalaya";
 $jurusan = "Rekayasa Perangkat Lunak";
