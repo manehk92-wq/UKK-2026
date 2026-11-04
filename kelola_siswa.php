@@ -9,56 +9,54 @@ $hasil = mysqli_query($koneksi, $sql);
 
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Kelola Siswa</title>
 
-    <!-- Bootstrap 5 -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
-          rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- DataTables Bootstrap 5 -->
-    <link href="https://cdn.datatables.net/2.3.4/css/dataTables.bootstrap5.min.css"
-          rel="stylesheet">
-          <link rel="stylesheet" href="layout/style.css">
+    <!-- DataTables Bootstrap 5 CSS -->
+    <link href="https://cdn.datatables.net/2.3.4/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Custom Style -->
+    <link rel="stylesheet" href="layout/style.css">
 </head>
-
 <body>
-
 <div class="container-fluid">
     <div class="row">
 
+        <!-- SIDEBAR -->
         <?php include 'layout/sidebar.php'; ?>
 
-        <!-- KONTEN -->
+        <!-- KONTEN UTAMA -->
         <main class="col-md-9 col-lg-10 p-4">
 
+            <!-- HEADER JUDUL & TOMBOL -->
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h1>Kelola Siswa</h1>
-
                 <a href="tambah_siswa.php" class="btn btn-primary">
-                    + Tambah Siswa
+                    <i class="bi bi-plus-circle"></i> Tambah Siswa
                 </a>
             </div>
 
+            <!-- TOMBOL KEMBALI -->
             <a href="dashboard.php" class="btn btn-secondary mb-3">
-                Kembali ke Dashboard
+                <i class="bi bi-arrow-left"></i> Kembali ke Dashboard
             </a>
 
+            <!-- CARD TABEL -->
             <div class="card shadow-sm">
                 <div class="card-body">
-
                     <div class="table-responsive">
-                        <table id="tabelSiswa"
-                               class="table table-striped table-bordered table-hover align-middle w-100">
-
+                        <table id="tabelSiswa" class="table table-striped table-bordered table-hover align-middle w-100">
                             <thead class="table-dark">
                                 <tr>
                                     <th>No.</th>
-                                    <!-- <th>ID</th> -->
                                     <th>NIS</th>
                                     <th>NISN</th>
                                     <th>Nama Siswa</th>
@@ -69,30 +67,16 @@ $hasil = mysqli_query($koneksi, $sql);
                                     <th>Aksi</th>
                                 </tr>
                             </thead>
-
                             <tbody>
                                 <?php
-                                $no = 1; 
-                                while ($row = mysqli_fetch_assoc($hasil)) { ?>
-
+                                $no = 1;
+                                while ($row = mysqli_fetch_assoc($hasil)) {
+                                ?>
                                 <tr>
                                     <td><?= $no++ ?></td>
-                                    <!-- <td>
-                                        <?= htmlspecialchars($row['id']) ?>
-                                    </td> -->
-
-                                    <td>
-                                        <?= htmlspecialchars($row['nis']) ?>
-                                    </td>
-
-                                    <td>
-                                        <?= htmlspecialchars($row['nisn']) ?>
-                                    </td>
-
-                                    <td>
-                                        <?= htmlspecialchars($row['nama']) ?>
-                                    </td>
-
+                                    <td><?= htmlspecialchars($row['nis']) ?></td>
+                                    <td><?= htmlspecialchars($row['nisn']) ?></td>
+                                    <td><?= htmlspecialchars($row['nama']) ?></td>
                                     <td>
                                         <?php
                                         if ($row['jenis_kelamin'] == 'L') {
@@ -104,15 +88,8 @@ $hasil = mysqli_query($koneksi, $sql);
                                         }
                                         ?>
                                     </td>
-
-                                    <td>
-                                        <?= htmlspecialchars($row['tanggal_lahir'] ?? '') ?>
-                                    </td>
-
-                                    <td>
-                                        <?= htmlspecialchars($row['alamat'] ?? '') ?>
-                                    </td>
-
+                                    <td><?= htmlspecialchars($row['tanggal_lahir'] ?? '-') ?></td>
+                                    <td><?= htmlspecialchars($row['alamat'] ?? '-') ?></td>
                                     <td>
                                         <?php if ($row['status_aktif'] == 1) { ?>
                                             <span class="badge bg-success">Aktif</span>
@@ -120,27 +97,20 @@ $hasil = mysqli_query($koneksi, $sql);
                                             <span class="badge bg-secondary">Tidak Aktif</span>
                                         <?php } ?>
                                     </td>
-
                                     <td class="text-nowrap">
-                                        <a href="edit_siswa.php?id=<?= urlencode($row['id']) ?>"
-                                           class="btn btn-warning btn-sm">
-                                            Edit
+                                        <a href="edit_siswa.php?id=<?= urlencode($row['id']) ?>" class="btn btn-warning btn-sm">
+                                            <i class="bi bi-pencil-square"></i> Edit
                                         </a>
-
-                                        <a href="hapus_siswa.php?id=<?= urlencode($row['id']) ?>"
-                                           class="btn btn-danger btn-sm"
+                                        <a href="hapus_siswa.php?id=<?= urlencode($row['id']) ?>" class="btn btn-danger btn-sm"
                                            onclick="return confirm('Yakin ingin menghapus data siswa ini?');">
-                                            Hapus
+                                            <i class="bi bi-trash"></i> Hapus
                                         </a>
                                     </td>
                                 </tr>
-
                                 <?php } ?>
                             </tbody>
-
                         </table>
                     </div>
-
                 </div>
             </div>
 
@@ -151,15 +121,16 @@ $hasil = mysqli_query($koneksi, $sql);
 <!-- jQuery -->
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
-<!-- DataTables -->
+<!-- DataTables JS -->
 <script src="https://cdn.datatables.net/2.3.4/js/dataTables.min.js"></script>
 
-<!-- DataTables Bootstrap 5 -->
+<!-- DataTables Bootstrap 5 JS -->
 <script src="https://cdn.datatables.net/2.3.4/js/dataTables.bootstrap5.min.js"></script>
 
-<!-- Bootstrap 5 JS -->
+<!-- Bootstrap 5 Bundle JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 
+<!-- KONFIGURASI DATATABLES -->
 <script>
 $(document).ready(function () {
     $('#tabelSiswa').DataTable({

@@ -6,7 +6,7 @@ $nama = "Sendi Mardian";
 $kelas = "XII RPL";
 $sekolah = "SMK Muhammadiyah Tasikmalaya";
 $jurusan = "Rekayasa Perangkat Lunak";
-$hobi = "Baca Buku";
+$hobi = "pemancing handal";
 ?>
 
 <!DOCTYPE html>

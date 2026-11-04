@@ -1,9 +1,12 @@
 <?php
-//includes/cek_session.php
-session_start();
+// includes/cek_session.php
 
-if(!isset($_SESSION['login']) || $_SESSION['login'] !== true) {
-    header('Location: login.php');
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+if (!isset($_SESSION['id_user'])) {
+    header("Location: login.php");
     exit;
 }
 ?>
