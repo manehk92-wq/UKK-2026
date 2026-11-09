@@ -1,4 +1,4 @@
-
+```php
 <?php
 // hapus_tahun_ajaran.php
 
@@ -14,6 +14,8 @@ if (!ctype_digit((string) $id) || $id === '') {
     header('Location: kelola_tahun_ajaran.php');
     exit;
 }
+
+$id = (int) $id;
 
 // Ambil nama tahun ajaran sebelum dihapus
 $stmt = mysqli_prepare(
@@ -37,60 +39,119 @@ if (!$data) {
     exit;
 }
 
-// Hapus data tahun ajaran
-$stmt = mysqli_prepare(
-    $koneksi,
-    "DELETE FROM t_tahun_ajaran WHERE id = ?"
-);
+// Mulai transaksi
+mysqli_begin_transaction($koneksi);
 
-mysqli_stmt_bind_param($stmt, "i", $id);
+try {
 
-if (mysqli_stmt_execute($stmt)) {
+    // Cek apakah tahun ajaran masih digunakan
+    $cek = mysqli_prepare(
+        $koneksi,
+        "SELECT COUNT(*) AS jumlah
+         FROM t_pelanggaran_siswa
+         WHERE tahun_ajaran_id = ?"
+    );
 
-    // Ambil ID pengguna yang sedang login
-    $id_user = $_SESSION['id_user'] ?? null;
-    $waktu = date('Y-m-d H:i:s');
+    mysqli_stmt_bind_param($cek, "i", $id);
+    mysqli_stmt_execute($cek);
 
-    $aktivitas = "hapus tahun ajaran: " . $data['nama'];
+    $hasil_cek = mysqli_stmt_get_result($cek);
+    $jumlah_data = mysqli_fetch_assoc($hasil_cek)['jumlah'];
 
-    // Simpan aktivitas ke tabel log
-    if ($id_user !== null) {
-        $log = mysqli_prepare(
-            $koneksi,
-            "INSERT INTO tbl_log (id_user, aktivitas, waktu)
-             VALUES (?, ?, ?)"
-        );
+    mysqli_stmt_close($cek);
 
-        mysqli_stmt_bind_param(
-            $log,
-            "iss",
-            $id_user,
-            $aktivitas,
-            $waktu
-        );
+    // Jika masih digunakan, batalkan penghapusan
+    if ($jumlah_data > 0) {
+        mysqli_rollback($koneksi);
 
-        mysqli_stmt_execute($log);
-        mysqli_stmt_close($log);
+        echo "<script>
+            alert('Tahun ajaran tidak bisa dihapus karena masih digunakan oleh $jumlah_data data pelanggaran siswa!');
+            window.location.href = 'kelola_tahun_ajaran.php';
+        </script>";
+        exit;
     }
 
-    mysqli_stmt_close($stmt);
+    // Hapus tahun ajaran jika tidak memiliki data terkait
+    $stmt = mysqli_prepare(
+        $koneksi,
+        "DELETE FROM t_tahun_ajaran WHERE id = ?"
+    );
+
+    mysqli_stmt_bind_param($stmt, "i", $id);
+    mysqli_stmt_execute($stmt);
+
+    if (mysqli_stmt_affected_rows($stmt) > 0) {
+
+        mysqli_stmt_close($stmt);
+
+        // Simpan aktivitas ke tabel log jika tabel tersedia
+        $id_user = $_SESSION['id_user'] ?? null;
+        $waktu = date('Y-m-d H:i:s');
+        $aktivitas = "hapus tahun ajaran: " . $data['nama'];
+
+        if ($id_user !== null) {
+
+            $cek_tabel = mysqli_query(
+                $koneksi,
+                "SHOW TABLES LIKE 'tbl_log'"
+            );
+
+            if ($cek_tabel && mysqli_num_rows($cek_tabel) > 0) {
+
+                $log = mysqli_prepare(
+                    $koneksi,
+                    "INSERT INTO tbl_log (id_user, aktivitas, waktu)
+                     VALUES (?, ?, ?)"
+                );
+
+                if ($log) {
+                    mysqli_stmt_bind_param(
+                        $log,
+                        "iss",
+                        $id_user,
+                        $aktivitas,
+                        $waktu
+                    );
+
+                    mysqli_stmt_execute($log);
+                    mysqli_stmt_close($log);
+                }
+            }
+
+            if ($cek_tabel) {
+                mysqli_free_result($cek_tabel);
+            }
+        }
+
+        // Simpan perubahan
+        mysqli_commit($koneksi);
+
+        echo "<script>
+            alert('Tahun ajaran berhasil dihapus!');
+            window.location.href = 'kelola_tahun_ajaran.php';
+        </script>";
+        exit;
+
+    } else {
+
+        mysqli_stmt_close($stmt);
+        mysqli_rollback($koneksi);
+
+        echo "<script>
+            alert('Tahun ajaran gagal dihapus!');
+            window.location.href = 'kelola_tahun_ajaran.php';
+        </script>";
+        exit;
+    }
+
+} catch (mysqli_sql_exception $e) {
+
+    mysqli_rollback($koneksi);
 
     echo "<script>
-        alert('Tahun ajaran berhasil dihapus!');
-        window.location.href = 'kelola_tahun_ajaran.php';
-    </script>";
-    exit;
-
-} else {
-
-    $pesan = mysqli_stmt_error($stmt);
-    mysqli_stmt_close($stmt);
-
-    echo "<script>
-        alert('Gagal menghapus tahun ajaran!');
+        alert('Terjadi kesalahan saat menghapus tahun ajaran. Data tidak jadi dihapus.');
         window.location.href = 'kelola_tahun_ajaran.php';
     </script>";
     exit;
 }
 ?>
-
