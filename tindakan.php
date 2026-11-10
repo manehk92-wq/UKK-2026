@@ -167,6 +167,8 @@ function e($value) {
 
 <body>
 
+<?php include __DIR__ . '/layout/sidebar.php'; ?>
+
 <div class="container-fluid content">
 
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">

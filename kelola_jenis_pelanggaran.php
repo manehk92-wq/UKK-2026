@@ -28,7 +28,7 @@ if (!$hasil) {
 <div class="container-fluid">
     <div class="row">
         <?php include 'layout/sidebar.php'; ?>
-        <main class="col-md-9 col-lg-10 p-4">
+<main class="menu-page-content">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h1>Kelola Jenis Pelanggaran</h1>
                 <a href="tambah_jenis_pelanggaran.php" class="btn btn-primary">

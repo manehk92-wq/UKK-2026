@@ -40,8 +40,7 @@ if (!in_array($status_aktif, [0, 1], true)) {
     exit('Status aktif tidak valid.');
 }
 
-// Pastikan nama tabel sesuai dengan database kamu
-$sql = "UPDATE t_walikelas SET
+$sql = "UPDATE t_wali_kelas SET
         tahun_ajaran_id = ?,
         kelas_id = ?,
         guru_id = ?,

@@ -163,23 +163,11 @@ mysqli_stmt_bind_result(
 
         <!-- SIDEBAR -->
         <?php
-        $sidebar = __DIR__ . '/includes/sidebar.php';
-
-        if (!file_exists($sidebar)) {
-            $sidebar = __DIR__ . '/sidebar.php';
-        }
-
-        if (file_exists($sidebar)) {
-            include $sidebar;
-        } else {
-            echo '<div class="alert alert-danger">
-                File sidebar.php tidak ditemukan.
-            </div>';
-        }
+        include __DIR__ . '/layout/sidebar.php';
         ?>
 
         <!-- KONTEN UTAMA -->
-        <main class="col-md-9 col-lg-10 content">
+        <main class="menu-page-content content">
 
             <div class="mb-4">
 

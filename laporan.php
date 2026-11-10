@@ -136,7 +136,6 @@ function formatTanggal($tanggal) {
         }
 
         .content {
-            margin-left: 260px;
             padding: 25px;
         }
 
@@ -170,6 +169,8 @@ function formatTanggal($tanggal) {
 
         @media print {
             .sidebar,
+            .sidebar-toggle,
+            .sidebar-backdrop,
             .filter-area,
             .tombol-aksi,
             .btn,
@@ -202,14 +203,7 @@ function formatTanggal($tanggal) {
 
 <body>
 
-<?php
-// Tampilkan sidebar jika file tersedia
-if (file_exists('includes/sidebar.php')) {
-    include 'includes/sidebar.php';
-} elseif (file_exists('sidebar.php')) {
-    include 'sidebar.php';
-}
-?>
+<?php include __DIR__ . '/layout/sidebar.php'; ?>
 
 <div class="content">
 

@@ -154,23 +154,11 @@ mysqli_stmt_close($stmt);
 
         <!-- SIDEBAR -->
         <?php
-        $sidebar = __DIR__ . '/includes/sidebar.php';
-
-        if (!file_exists($sidebar)) {
-            $sidebar = __DIR__ . '/sidebar.php';
-        }
-
-        if (file_exists($sidebar)) {
-            include $sidebar;
-        } else {
-            echo '<div class="alert alert-danger">
-                    File sidebar.php tidak ditemukan.
-                  </div>';
-        }
+        include __DIR__ . '/layout/sidebar.php';
         ?>
 
         <!-- KONTEN UTAMA -->
-        <main class="col-md-9 col-lg-10 content">
+        <main class="menu-page-content content">
 
             <div class="mb-4">
                 <h3 class="judul">📊 Rekap Poin Pelanggaran Siswa</h3>
@@ -232,35 +220,33 @@ mysqli_stmt_close($stmt);
 
                     </div>
 
-                    <!-- PENCARIAN -->
-                    <form method="GET" action="rekap.php"
-                          class="row g-2 mb-4">
+                    
+<!-- FORM PENCARIAN -->
+<form method="GET" action="rekap_poin.php" class="row g-2 mb-4">
 
-                        <div class="col-md-8">
-                            <input
-                                type="text"
-                                name="cari"
-                                class="form-control"
-                                placeholder="Cari nama siswa atau kelas..."
-                                value="<?= e($cari) ?>"
-                            >
-                        </div>
+    <div class="col-md-8">
+        <input
+            type="text"
+            name="cari"
+            class="form-control"
+            placeholder="Cari nama siswa atau kelas..."
+            value="<?= e($cari) ?>"
+        >
+    </div>
 
-                        <div class="col-md-2">
-                            <button type="submit"
-                                    class="btn btn-primary w-100">
-                                🔍 Cari
-                            </button>
-                        </div>
+    <div class="col-md-2">
+        <button type="submit" class="btn btn-primary w-100">
+            <i class="bi bi-search"></i> Cari
+        </button>
+    </div>
 
-                        <div class="col-md-2">
-                            <a href="rekap.php"
-                               class="btn btn-secondary w-100">
-                                Reset
-                            </a>
-                        </div>
+    <div class="col-md-2">
+        <a href="rekap_poin.php" class="btn btn-secondary w-100">
+            Reset
+        </a>
+    </div>
 
-                    </form>
+</form>
 
                     <!-- TABEL -->
                     <div class="table-responsive">

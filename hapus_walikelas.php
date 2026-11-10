@@ -10,7 +10,7 @@ $sql = "SELECT
             w.id,
             w.kelas_id,
             k.nama AS nama_kelas
-        FROM t_walikelas w
+        FROM t_wali_kelas w
         LEFT JOIN t_kelas k ON w.kelas_id = k.id
         WHERE w.id = ?";
 
@@ -27,7 +27,7 @@ if (!$data) {
 // Hapus data
 $hapus = mysqli_prepare(
     $koneksi,
-    "DELETE FROM t_walikelas WHERE id = ?"
+    "DELETE FROM t_wali_kelas WHERE id = ?"
 );
 mysqli_stmt_bind_param($hapus, "i", $id);
 

@@ -25,6 +25,118 @@ $hasil = mysqli_query($koneksi, $sql);
 
     <!-- Custom Style -->
     <link rel="stylesheet" href="layout/style.css">
+    <style>
+        .student-page-title {
+            margin: 0;
+            color: #17233f;
+            font-size: clamp(1.5rem, 2.5vw, 2rem);
+            font-weight: 700;
+        }
+
+        .student-table-card {
+            overflow: hidden;
+            border: 1px solid #e8ecf4;
+            border-radius: 14px;
+            background: #fff;
+        }
+
+        .student-table-card .card-body {
+            padding: 20px;
+        }
+
+        #tabelSiswa {
+            min-width: 1120px;
+            margin-bottom: 0;
+            border-color: #e2e8f0;
+            color: #263248;
+            font-size: 0.9rem;
+        }
+
+        #tabelSiswa thead th {
+            padding: 14px 12px;
+            border-bottom: 0;
+            background: #17233f;
+            color: #fff;
+            font-size: 0.82rem;
+            font-weight: 600;
+            vertical-align: middle;
+        }
+
+        #tabelSiswa tbody td {
+            padding: 12px;
+            vertical-align: middle;
+        }
+
+        #tabelSiswa tbody tr:hover > * {
+            background-color: #f0f5ff;
+        }
+
+        #tabelSiswa th:nth-child(1),
+        #tabelSiswa td:nth-child(1),
+        #tabelSiswa th:nth-child(2),
+        #tabelSiswa td:nth-child(2),
+        #tabelSiswa th:nth-child(3),
+        #tabelSiswa td:nth-child(3),
+        #tabelSiswa th:nth-child(5),
+        #tabelSiswa td:nth-child(5),
+        #tabelSiswa th:nth-child(6),
+        #tabelSiswa td:nth-child(6),
+        #tabelSiswa th:nth-child(8),
+        #tabelSiswa td:nth-child(8),
+        #tabelSiswa th:nth-child(9),
+        #tabelSiswa td:nth-child(9) {
+            white-space: nowrap;
+        }
+
+        #tabelSiswa td:nth-child(7) {
+            min-width: 200px;
+            line-height: 1.5;
+        }
+
+        #tabelSiswa td .btn {
+            margin: 2px 2px 2px 0;
+        }
+
+        .dt-container .dt-layout-row {
+            align-items: center;
+            gap: 12px;
+        }
+
+        .dt-container .dt-search input,
+        .dt-container .dt-length select {
+            min-height: 38px;
+            border-color: #d7deea;
+            border-radius: 8px;
+        }
+
+        .dt-container .dt-search input {
+            margin-left: 8px;
+        }
+
+        .dt-container .dt-info {
+            color: #667085;
+            font-size: 0.875rem;
+        }
+
+        .dt-container .pagination {
+            gap: 4px;
+        }
+
+        .dt-container .page-link {
+            border-radius: 7px;
+        }
+
+        @media (max-width: 767.98px) {
+            .student-table-card .card-body {
+                padding: 14px;
+            }
+
+            .student-page-header {
+                align-items: flex-start !important;
+                flex-direction: column;
+            }
+        }
+    </style>
 </head>
 <body>
 <div class="container-fluid">
@@ -34,11 +146,11 @@ $hasil = mysqli_query($koneksi, $sql);
         <?php include 'layout/sidebar.php'; ?>
 
         <!-- KONTEN UTAMA -->
-        <main class="col-md-9 col-lg-10 p-4">
+        <main class="menu-page-content">
 
             <!-- HEADER JUDUL & TOMBOL -->
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h1>Kelola Siswa</h1>
+            <div class="student-page-header d-flex justify-content-between align-items-center mb-4 gap-3">
+                <h1 class="student-page-title">Kelola Siswa</h1>
                 <a href="tambah_siswa.php" class="btn btn-primary">
                     <i class="bi bi-plus-circle"></i> Tambah Siswa
                 </a>
@@ -50,11 +162,11 @@ $hasil = mysqli_query($koneksi, $sql);
             </a>
 
             <!-- CARD TABEL -->
-            <div class="card shadow-sm">
+            <div class="card student-table-card shadow-sm">
                 <div class="card-body">
                     <div class="table-responsive">
                         <table id="tabelSiswa" class="table table-striped table-bordered table-hover align-middle w-100">
-                            <thead class="table-dark">
+                            <thead>
                                 <tr>
                                     <th>No.</th>
                                     <th>NIS</th>

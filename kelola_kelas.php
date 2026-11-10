@@ -41,8 +41,7 @@ if (!$hasil) {
         <?php include 'layout/sidebar.php'; ?>
 
         <!-- KONTEN UTAMA -->
-        <main class="col-md-9 col-lg-10 p-4">
-
+<main class="menu-page-content">
             <h1 class="mb-3">Kelola Kelas</h1>
 
             <!-- TOMBOL NAVIGASI -->

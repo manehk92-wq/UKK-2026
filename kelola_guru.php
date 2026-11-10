@@ -33,8 +33,7 @@ $hasil = mysqli_query($koneksi, $sql);
         <?php include 'layout/sidebar.php'; ?>
 
         <!-- KONTEN -->
-        <main class="col-md-9 col-lg-10 p-4">
-
+<main class="menu-page-content">
             <h1 class="mb-4">Kelola Guru</h1>
 
             <div class="d-flex justify-content-between align-items-center mb-3">

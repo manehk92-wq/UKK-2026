@@ -35,7 +35,7 @@ $hobi = "pemancing handal";
         <?php include 'layout/sidebar.php'; ?>
 
         <!-- KONTEN -->
-        <main class="col-md-9 col-lg-10 main-content">
+        <main class="menu-page-content">
 
             <!-- HEADER -->
             <div class="page-header">
