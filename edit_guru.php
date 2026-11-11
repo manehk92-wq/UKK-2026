@@ -1,12 +1,13 @@
 
 <?php
+// edit_guru.php
 include 'includes/cek_session.php';
 include 'config/koneksi.php';
 
 $id = $_GET['id'] ?? '';
 
-if ($id == '') {
-    die("ID guru tidak ditemukan!");
+if (!ctype_digit((string) $id) || $id === '') {
+    die("ID guru tidak valid!");
 }
 
 // Ambil data guru
@@ -16,6 +17,7 @@ mysqli_stmt_execute($stmt);
 
 $result = mysqli_stmt_get_result($stmt);
 $guru = mysqli_fetch_assoc($result);
+mysqli_stmt_close($stmt);
 
 if (!$guru) {
     die("Data guru tidak ditemukan!");
@@ -30,10 +32,7 @@ if (!$guru) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Guru</title>
 
-    <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
 
     <style>
@@ -139,10 +138,8 @@ if (!$guru) {
 
 <body>
 
-    <!-- Sidebar -->
     <?php include 'layout/sidebar.php'; ?>
 
-    <!-- Konten Utama -->
     <div class="content-wrapper">
 
         <div class="page-title">
@@ -152,7 +149,6 @@ if (!$guru) {
 
         <div class="card form-card">
 
-            <!-- Header -->
             <div class="card-header-custom">
                 <h4>
                     <i class="bi bi-pencil-square me-2"></i>
@@ -161,7 +157,6 @@ if (!$guru) {
                 <small>Silakan ubah informasi data guru di bawah ini.</small>
             </div>
 
-            <!-- Form -->
             <form action="proses_edit_guru.php" method="POST">
 
                 <input type="hidden" name="id"
@@ -233,10 +228,41 @@ if (!$guru) {
                                     name="user_id"
                                     class="form-control"
                                     value="<?= htmlspecialchars($guru['user_id'] ?? ''); ?>"
-                                    required>
+                                    readonly>
                                 <small class="text-muted">
                                     ID pengguna yang terhubung dengan data guru.
                                 </small>
+                            </div>
+                        </div>
+
+                        <!-- Password Baru -->
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Password Baru</label>
+                                <input type="password"
+                                    name="password"
+                                    id="password"
+                                    class="form-control"
+                                    placeholder="Kosongkan jika tidak ingin mengganti password"
+                                    minlength="6"
+                                    autocomplete="new-password">
+                                <small class="text-muted">
+                                    Minimal 6 karakter. Kosongkan jika tetap menggunakan password lama.
+                                </small>
+                            </div>
+                        </div>
+
+                        <!-- Konfirmasi Password -->
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Konfirmasi Password Baru</label>
+                                <input type="password"
+                                    name="konfirmasi_password"
+                                    id="konfirmasi_password"
+                                    class="form-control"
+                                    placeholder="Ulangi password baru"
+                                    minlength="6"
+                                    autocomplete="new-password">
                             </div>
                         </div>
 
@@ -244,7 +270,6 @@ if (!$guru) {
 
                 </div>
 
-                <!-- Footer -->
                 <div class="card-footer-custom">
 
                     <button type="submit" class="btn btn-primary me-2">
@@ -264,6 +289,19 @@ if (!$guru) {
         </div>
 
     </div>
+
+    <script>
+        const password = document.getElementById('password');
+        const konfirmasi = document.getElementById('konfirmasi_password');
+
+        document.querySelector('form').addEventListener('submit', function(event) {
+            if (password.value !== konfirmasi.value) {
+                event.preventDefault();
+                alert('Password baru dan konfirmasi password tidak sama!');
+                konfirmasi.focus();
+            }
+        });
+    </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 

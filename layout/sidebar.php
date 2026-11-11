@@ -1,4 +1,3 @@
-```php
 <?php
 // layout/sidebar.php
 
@@ -244,6 +243,7 @@ function menuAktif($halaman, $current_page) {
 >
     <span aria-hidden="true">&#9776;</span>
 </button>
+
 <button type="button" class="sidebar-backdrop" aria-label="Tutup menu navigasi"></button>
 
 <div class="sidebar" id="app-sidebar">
@@ -328,6 +328,12 @@ function menuAktif($halaman, $current_page) {
                 </a>
             </li>
 
+            <li class="nav-item">
+                <a href="laporan.php" class="nav-link <?= menuAktif('laporan.php', $current_page) ?>">
+                    📑 Laporan
+                </a>
+            </li>
+
             <li class="menu-title">Informasi</li>
 
             <li class="nav-item">
@@ -367,6 +373,13 @@ function menuAktif($halaman, $current_page) {
             <li class="nav-item">
                 <a href="rekap_poin.php" class="nav-link <?= menuAktif('rekap_poin.php', $current_page) ?>">
                     📊 Rekap Poin
+                </a>
+            </li>
+
+            <!-- MENU LAPORAN UNTUK GURU -->
+            <li class="nav-item">
+                <a href="laporan.php" class="nav-link <?= menuAktif('laporan.php', $current_page) ?>">
+                    📑 Laporan
                 </a>
             </li>
 
@@ -418,6 +431,7 @@ function menuAktif($halaman, $current_page) {
         });
 
         backdrop.addEventListener('click', closeSidebar);
+
         document.addEventListener('keydown', (event) => {
             if (event.key === 'Escape') {
                 closeSidebar();
@@ -428,4 +442,3 @@ function menuAktif($halaman, $current_page) {
         updateToggleState();
     })();
 </script>
-```

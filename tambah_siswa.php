@@ -144,23 +144,17 @@ include 'includes/cek_session.php';
 
                     <div class="row">
 
-                        <!-- NIS -->
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">NIS</label>
-                            <input type="text" name="nis"
-                                class="form-control"
-                                placeholder="Masukkan NIS"
-                                required>
-                        </div>
+  <div class="form-group">
+    <label>NIS</label>
+    <input type="text" name="nis" class="form-control" placeholder="Masukkan NIS" 
+           maxlength="15" onkeypress="return event.charCode >= 48 && event.charCode <= 57" required>
+</div>
 
-                        <!-- NISN -->
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">NISN</label>
-                            <input type="text" name="nisn"
-                                class="form-control"
-                                placeholder="Masukkan NISN"
-                                required>
-                        </div>
+<div class="form-group">
+    <label>NISN</label>
+    <input type="text" name="nisn" class="form-control" placeholder="Masukkan NISN" 
+           maxlength="10" onkeypress="return event.charCode >= 48 && event.charCode <= 57" required>
+</div>
 
                         <!-- Nama -->
                         <div class="col-md-12 mb-3">
