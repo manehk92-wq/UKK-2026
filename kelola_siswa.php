@@ -206,7 +206,7 @@ $hasil = mysqli_query($koneksi, $sql);
                                         <?php if ($row['status_aktif'] == 1) { ?>
                                             <span class="badge bg-success">Aktif</span>
                                         <?php } else { ?>
-                                            <span class="badge bg-secondary">Tidak Aktif</span>
+                                            <span class="badge bg-success">Aktif</span>
                                         <?php } ?>
                                     </td>
                                     <td class="text-nowrap">
