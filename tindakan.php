@@ -4,7 +4,9 @@ session_start();
 
 require_once __DIR__ . '/config/koneksi.php';
 
-// Periksa login
+// ==========================================
+// CEK LOGIN
+// ==========================================
 if (
     !isset($_SESSION['login']) ||
     $_SESSION['login'] !== true ||
@@ -14,15 +16,26 @@ if (
     exit;
 }
 
-// Token keamanan form
+// ==========================================
+// TOKEN KEAMANAN
+// ==========================================
 if (empty($_SESSION['csrf_tindakan'])) {
     $_SESSION['csrf_tindakan'] = bin2hex(random_bytes(32));
+}
+
+// ==========================================
+// FUNGSI KEAMANAN OUTPUT
+// ==========================================
+function e($value) {
+    return htmlspecialchars((string)$value, ENT_QUOTES, 'UTF-8');
 }
 
 $pesan = '';
 $jenis_pesan = 'success';
 
-// Proses update tindakan
+// ==========================================
+// PROSES SIMPAN TINDAKAN
+// ==========================================
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $token = $_POST['csrf_token'] ?? '';
@@ -35,20 +48,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $tindakan = trim($_POST['tindakan'] ?? '');
     $status = trim($_POST['status'] ?? '');
 
-    if (!$id || $tindakan === '' || $status === '') {
+    $daftar_status = [
+        'Belum Ditindaklanjuti',
+        'Diproses',
+        'Ditindaklanjuti'
+    ];
+
+    if (
+        !$id ||
+        $tindakan === '' ||
+        !in_array($status, $daftar_status, true)
+    ) {
+
         $_SESSION['flash_tindakan'] = [
             'jenis' => 'danger',
-            'pesan' => 'Semua data tindakan dan status wajib diisi!'
+            'pesan' => 'Data tindakan dan status wajib diisi dengan benar!'
         ];
+
     } else {
 
         $sql = "UPDATE t_pelanggaran_siswa
-                SET tindakan = ?, status = ?
+                SET tindakan = ?,
+                    status = ?,
+                    updated_at = CURRENT_TIMESTAMP
                 WHERE id = ?";
 
         $stmt = mysqli_prepare($koneksi, $sql);
 
         if ($stmt) {
+
             mysqli_stmt_bind_param(
                 $stmt,
                 "ssi",
@@ -58,23 +86,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             );
 
             if (mysqli_stmt_execute($stmt)) {
-                $_SESSION['flash_tindakan'] = [
-                    'jenis' => 'success',
-                    'pesan' => 'Tindakan pelanggaran berhasil diperbarui!'
-                ];
+
+                if ($status === 'Ditindaklanjuti') {
+                    $_SESSION['flash_tindakan'] = [
+                        'jenis' => 'success',
+                        'pesan' => 'Berhasil! Siswa sudah ditindaklanjuti dan dipindahkan ke menu Riwayat.'
+                    ];
+                } else {
+                    $_SESSION['flash_tindakan'] = [
+                        'jenis' => 'success',
+                        'pesan' => 'Tindakan pelanggaran berhasil diperbarui!'
+                    ];
+                }
+
             } else {
+
                 $_SESSION['flash_tindakan'] = [
                     'jenis' => 'danger',
-                    'pesan' => 'Gagal memperbarui tindakan.'
+                    'pesan' => 'Gagal memperbarui tindakan: ' . mysqli_stmt_error($stmt)
                 ];
             }
 
             mysqli_stmt_close($stmt);
 
         } else {
+
             $_SESSION['flash_tindakan'] = [
                 'jenis' => 'danger',
-                'pesan' => 'Query database gagal.'
+                'pesan' => 'Query database gagal: ' . mysqli_error($koneksi)
             ];
         }
     }
@@ -83,15 +122,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     exit;
 }
 
-// Ambil pesan
+// ==========================================
+// AMBIL PESAN NOTIFIKASI
+// ==========================================
 if (isset($_SESSION['flash_tindakan'])) {
+
     $pesan = $_SESSION['flash_tindakan']['pesan'];
     $jenis_pesan = $_SESSION['flash_tindakan']['jenis'];
 
     unset($_SESSION['flash_tindakan']);
 }
 
-// Ambil data pelanggaran
+// ==========================================
+// AMBIL DATA TINDAKAN
+// YANG BELUM SELESAI DITINDAKLANJUTI
+// ==========================================
 $sql = "SELECT
             id,
             nama_siswa,
@@ -104,6 +149,8 @@ $sql = "SELECT
             tindakan,
             status
         FROM t_pelanggaran_siswa
+        WHERE status IS NULL
+           OR status != 'Ditindaklanjuti'
         ORDER BY id DESC";
 
 $result = mysqli_query($koneksi, $sql);
@@ -112,14 +159,12 @@ if (!$result) {
     die("Gagal mengambil data: " . mysqli_error($koneksi));
 }
 
-// Fungsi keamanan output
-function e($value) {
-    return htmlspecialchars((string)$value, ENT_QUOTES, 'UTF-8');
-}
+$total_data = mysqli_num_rows($result);
 ?>
 
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -160,7 +205,13 @@ function e($value) {
         }
 
         .form-status {
-            min-width: 160px;
+            min-width: 180px;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 15px;
+            }
         }
     </style>
 </head>
@@ -171,10 +222,12 @@ function e($value) {
 
 <div class="container-fluid content">
 
+    <!-- JUDUL HALAMAN -->
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
 
         <div>
             <h3 class="fw-bold">Data Tindakan Pelanggaran</h3>
+
             <p class="text-muted mb-0">
                 Kelola tindak lanjut pelanggaran siswa.
             </p>
@@ -186,23 +239,37 @@ function e($value) {
 
     </div>
 
+    <!-- NOTIFIKASI -->
     <?php if ($pesan !== ''): ?>
+
         <div class="alert alert-<?= e($jenis_pesan) ?> alert-dismissible fade show">
+
             <?= e($pesan) ?>
-            <button type="button" class="btn-close"
-                    data-bs-dismiss="alert"></button>
+
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert">
+            </button>
+
         </div>
+
     <?php endif; ?>
 
+    <!-- TABEL DATA -->
     <div class="card">
 
         <div class="card-body">
 
-            <div class="d-flex justify-content-between mb-3 flex-wrap gap-2">
-                <h5 class="fw-bold">Daftar Pelanggaran Siswa</h5>
+            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+
+                <h5 class="fw-bold mb-0">
+                    Daftar Pelanggaran Siswa
+                </h5>
+
                 <span class="badge bg-primary">
-                    Total Data: <?= mysqli_num_rows($result) ?>
+                    Total Data: <?= $total_data ?>
                 </span>
+
             </div>
 
             <div class="table-responsive">
@@ -227,27 +294,41 @@ function e($value) {
 
                     <tbody>
 
-                    <?php if (mysqli_num_rows($result) > 0): ?>
+                    <?php if ($total_data > 0): ?>
 
                         <?php $no = 1; ?>
 
                         <?php while ($row = mysqli_fetch_assoc($result)): ?>
 
+                            <?php $formId = 'form_tindakan_' . (int)$row['id']; ?>
+
                             <tr>
 
                                 <td><?= $no++ ?></td>
 
-                                <td><?= e($row['nama_siswa']) ?></td>
+                                <td>
+                                    <?= e($row['nama_siswa']) ?>
+                                </td>
 
-                                <td><?= e($row['nama_kelas']) ?></td>
+                                <td>
+                                    <?= e($row['nama_kelas']) ?>
+                                </td>
 
-                                <td><?= e($row['nama_pelanggaran']) ?></td>
+                                <td>
+                                    <?= e($row['nama_pelanggaran']) ?>
+                                </td>
 
-                                <td><?= e($row['nama_guru']) ?></td>
+                                <td>
+                                    <?= e($row['nama_guru']) ?>
+                                </td>
 
-                                <td><?= e($row['tanggal']) ?></td>
+                                <td>
+                                    <?= e($row['tanggal']) ?>
+                                </td>
 
-                                <td><?= e($row['keterangan']) ?></td>
+                                <td>
+                                    <?= e($row['keterangan']) ?>
+                                </td>
 
                                 <td>
                                     <span class="badge bg-danger">
@@ -255,61 +336,83 @@ function e($value) {
                                     </span>
                                 </td>
 
-                                <form method="POST" action="tindakan.php">
+                                <td>
+                                    <textarea
+                                        form="<?= $formId ?>"
+                                        name="tindakan"
+                                        class="form-control form-tindakan"
+                                        rows="2"
+                                        required
+                                        placeholder="Masukkan tindakan..."
+                                    ><?= e($row['tindakan']) ?></textarea>
+                                </td>
 
-                                    <input type="hidden" name="csrf_token"
-                                           value="<?= e($_SESSION['csrf_tindakan']) ?>">
+                                <td>
 
-                                    <input type="hidden" name="id"
-                                           value="<?= (int)$row['id'] ?>">
+                                    <select
+                                        form="<?= $formId ?>"
+                                        name="status"
+                                        class="form-select form-status"
+                                        required
+                                    >
 
-                                    <td>
-                                        <textarea
-                                            name="tindakan"
-                                            class="form-control form-tindakan"
-                                            rows="2"
-                                            required
-                                            placeholder="Masukkan tindakan..."
-                                        ><?= e($row['tindakan']) ?></textarea>
-                                    </td>
+                                        <option value="">
+                                            Pilih Status
+                                        </option>
 
-                                    <td>
-                                        <select name="status"
-                                                class="form-select form-status"
-                                                required>
+                                        <?php
+                                        $daftar_status = [
+                                            'Belum Ditindaklanjuti',
+                                            'Diproses',
+                                            'Ditindaklanjuti'
+                                        ];
+                                        ?>
 
-                                            <option value="">
-                                                Pilih Status
+                                        <?php foreach ($daftar_status as $s): ?>
+
+                                            <option
+                                                value="<?= e($s) ?>"
+                                                <?= $row['status'] === $s ? 'selected' : '' ?>
+                                            >
+                                                <?= e($s) ?>
                                             </option>
 
-                                            <?php
-                                            $daftar_status = [
-                                                'Belum Ditindaklanjuti',
-                                                'Diproses',
-                                                'Selesai'
-                                            ];
+                                        <?php endforeach; ?>
 
-                                            foreach ($daftar_status as $s):
-                                            ?>
+                                    </select>
 
-                                                <option value="<?= e($s) ?>"
-                                                    <?= $row['status'] === $s ? 'selected' : '' ?>>
-                                                    <?= e($s) ?>
-                                                </option>
+                                </td>
 
-                                            <?php endforeach; ?>
+                                <td>
 
-                                        </select>
-                                    </td>
+                                    <form
+                                        id="<?= $formId ?>"
+                                        method="POST"
+                                        action="tindakan.php"
+                                    >
 
-                                    <td>
-                                        <button type="submit"
-                                                class="btn btn-primary btn-sm">
+                                        <input
+                                            type="hidden"
+                                            name="csrf_token"
+                                            value="<?= e($_SESSION['csrf_tindakan']) ?>"
+                                        >
+
+                                        <input
+                                            type="hidden"
+                                            name="id"
+                                            value="<?= (int)$row['id'] ?>"
+                                        >
+
+                                        <button
+                                            type="submit"
+                                            class="btn btn-primary btn-sm"
+                                        >
                                             Simpan
                                         </button>
-                                    </td>
 
-                                </form>
+                                    </form>
+
+                                </td>
 
                             </tr>
 
@@ -319,7 +422,19 @@ function e($value) {
 
                         <tr>
                             <td colspan="11" class="text-center py-4">
-                                Belum ada data pelanggaran siswa.
+
+                                <div class="text-muted">
+
+                                    <h6 class="fw-bold">
+                                        Tidak Ada Data Tindakan
+                                    </h6>
+
+                                    <p class="mb-0">
+                                        Semua siswa sudah ditindaklanjuti atau belum ada data pelanggaran.
+                                    </p>
+
+                                </div>
+
                             </td>
                         </tr>
 

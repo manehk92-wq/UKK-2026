@@ -4,9 +4,9 @@ session_start();
 
 require_once __DIR__ . '/config/koneksi.php';
 
-// ===============================
+// ==========================================
 // CEK LOGIN
-// ===============================
+// ==========================================
 if (
     !isset($_SESSION['login']) ||
     $_SESSION['login'] !== true ||
@@ -16,17 +16,19 @@ if (
     exit;
 }
 
-// Cek hak akses
-$role = $_SESSION['role'] ?? '';
+// ==========================================
+// CEK HAK AKSES
+// ==========================================
+$role = strtolower(trim($_SESSION['role'] ?? ''));
 
 if (!in_array($role, ['admin', 'guru'], true)) {
     header("Location: login.php");
     exit;
 }
 
-// ===============================
+// ==========================================
 // FUNGSI KEAMANAN
-// ===============================
+// ==========================================
 function e($value) {
     return htmlspecialchars(
         (string)$value,
@@ -35,9 +37,9 @@ function e($value) {
     );
 }
 
-// ===============================
+// ==========================================
 // PENCARIAN DATA
-// ===============================
+// ==========================================
 $cari = trim($_GET['cari'] ?? '');
 
 $sql = "SELECT
@@ -52,10 +54,13 @@ $sql = "SELECT
             tindakan,
             status
         FROM t_pelanggaran_siswa
-        WHERE nama_siswa LIKE ?
-           OR nama_kelas LIKE ?
-           OR nama_pelanggaran LIKE ?
-           OR nama_guru LIKE ?
+        WHERE status = 'Ditindaklanjuti'
+        AND (
+            nama_siswa LIKE ?
+            OR nama_kelas LIKE ?
+            OR nama_pelanggaran LIKE ?
+            OR nama_guru LIKE ?
+        )
         ORDER BY tanggal DESC, id DESC";
 
 $stmt = mysqli_prepare($koneksi, $sql);
@@ -77,12 +82,16 @@ mysqli_stmt_bind_param(
 
 mysqli_stmt_execute($stmt);
 
-// Hitung jumlah data
+// ==========================================
+// HITUNG JUMLAH DATA
+// ==========================================
 mysqli_stmt_store_result($stmt);
 
 $total_data = mysqli_stmt_num_rows($stmt);
 
-// Ambil hasil query
+// ==========================================
+// AMBIL HASIL QUERY
+// ==========================================
 mysqli_stmt_bind_result(
     $stmt,
     $id,
@@ -103,17 +112,19 @@ mysqli_stmt_bind_result(
 <html lang="id">
 
 <head>
+
     <meta charset="UTF-8">
 
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0">
 
-    <title>Riwayat Pelanggaran Siswa</title>
+    <title>Riwayat Tindakan Siswa</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
           rel="stylesheet">
 
     <style>
+
         body {
             background: #f4f6f9;
             font-family: Arial, sans-serif;
@@ -144,7 +155,7 @@ mysqli_stmt_bind_result(
         }
 
         .info-card {
-            border-left: 5px solid #0d6efd;
+            border-left: 5px solid #198754;
         }
 
         @media (max-width: 768px) {
@@ -152,7 +163,9 @@ mysqli_stmt_bind_result(
                 padding: 15px;
             }
         }
+
     </style>
+
 </head>
 
 <body>
@@ -162,21 +175,20 @@ mysqli_stmt_bind_result(
     <div class="row">
 
         <!-- SIDEBAR -->
-        <?php
-        include __DIR__ . '/layout/sidebar.php';
-        ?>
+        <?php include __DIR__ . '/layout/sidebar.php'; ?>
 
         <!-- KONTEN UTAMA -->
         <main class="menu-page-content content">
 
+            <!-- JUDUL -->
             <div class="mb-4">
 
                 <h3 class="judul">
-                    📖 Riwayat Pelanggaran Siswa
+                    📖 Riwayat Tindakan Siswa
                 </h3>
 
                 <p class="text-muted">
-                    Daftar seluruh catatan pelanggaran siswa.
+                    Daftar siswa yang sudah ditindaklanjuti.
                 </p>
 
             </div>
@@ -187,10 +199,10 @@ mysqli_stmt_bind_result(
                 <div class="card-body">
 
                     <h6 class="text-muted">
-                        Total Riwayat Pelanggaran
+                        Total Siswa Sudah Ditindaklanjuti
                     </h6>
 
-                    <h2 class="fw-bold text-primary mb-0">
+                    <h2 class="fw-bold text-success mb-0">
                         <?= $total_data ?>
                     </h2>
 
@@ -207,16 +219,16 @@ mysqli_stmt_bind_result(
                                 align-items-center flex-wrap gap-2 mb-4">
 
                         <h5 class="fw-bold mb-0">
-                            Data Riwayat
+                            Data Riwayat Tindakan
                         </h5>
 
-                        <span class="badge bg-primary fs-6">
+                        <span class="badge bg-success fs-6">
                             <?= $total_data ?> Data
                         </span>
 
                     </div>
 
-                    <!-- FORM PENCARIAN -->
+                    <!-- PENCARIAN -->
                     <form method="GET"
                           action="riwayat.php"
                           class="row g-2 mb-4">
@@ -282,9 +294,7 @@ mysqli_stmt_bind_result(
 
                                 <?php $no = 1; ?>
 
-                                <?php while (
-                                    mysqli_stmt_fetch($stmt)
-                                ): ?>
+                                <?php while (mysqli_stmt_fetch($stmt)): ?>
 
                                     <tr>
 
@@ -323,31 +333,13 @@ mysqli_stmt_bind_result(
                                         </td>
 
                                         <td>
-                                            <?= e(
-                                                $tindakan ?: 'Belum ada tindakan'
-                                            ) ?>
+                                            <?= e($tindakan ?: '-') ?>
                                         </td>
 
                                         <td>
-
-                                            <?php
-                                            $warna = 'secondary';
-
-                                            if ($status === 'Selesai') {
-                                                $warna = 'success';
-                                            } elseif ($status === 'Diproses') {
-                                                $warna = 'warning';
-                                            } elseif (
-                                                $status === 'Belum Ditindaklanjuti'
-                                            ) {
-                                                $warna = 'danger';
-                                            }
-                                            ?>
-
-                                            <span class="badge bg-<?= $warna ?>">
-                                                <?= e($status ?: 'Belum ada status') ?>
+                                            <span class="badge bg-success">
+                                                <?= e($status) ?>
                                             </span>
-
                                         </td>
 
                                     </tr>
@@ -361,9 +353,17 @@ mysqli_stmt_bind_result(
                                     <td colspan="10"
                                         class="text-center py-4">
 
-                                        <span class="text-muted">
-                                            Tidak ada riwayat pelanggaran ditemukan.
-                                        </span>
+                                        <div class="text-muted">
+
+                                            <h6 class="fw-bold">
+                                                Belum Ada Riwayat
+                                            </h6>
+
+                                            <p class="mb-0">
+                                                Belum ada siswa yang ditindaklanjuti.
+                                            </p>
+
+                                        </div>
 
                                     </td>
 
@@ -379,7 +379,7 @@ mysqli_stmt_bind_result(
 
                     <div class="text-muted small">
                         Menampilkan <?= $total_data ?>
-                        data riwayat pelanggaran.
+                        data siswa yang sudah ditindaklanjuti.
                     </div>
 
                 </div>
